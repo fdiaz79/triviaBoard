@@ -1,3 +1,15 @@
+<?php 
+    include('db/connect.php');
+    // query for all questions
+    $questionsQuery = 'SELECT id, question, points, bonus FROM questions ORDER BY id';
+    $result = mysqli_query($conn, $questionsQuery);
+    $questions = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    if($questions) {
+        print_r($questions);
+    }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
     <?php 
@@ -22,10 +34,13 @@
                 <label for="question">Question: </label>
                 <select name="question" class="custom-select">
                     <option value=""> --- Select Question --- </option>
-                    <option value="Question 1">Question 1</option>
-                    <option value="Question 2">Question 2</option>
-                    <option value="Question 3">Question 3</option>
-                    <option value="Question 4">Question 4</option>
+                    <?php 
+                        for($i = 0; $i < count($questions); $i++){
+                            $qText = $questions[$i]['question'];
+                            $qId = $questions[$i]['id'];
+                            echo "<option value='$qId'> $qText $qId</option> ";
+                        }
+                    ?>
                 </select>
             </div>
             <div class="form-group">
@@ -34,11 +49,11 @@
             </div>
             <div class="form-row">
                 <div class="form-check col-md-3 ml-4">
-                    <input class="form-check-input" type="checkbox" name="correct" value="4">
+                    <input class="form-check-input" type="checkbox" name="correct" value="1">
                     <label class="form-check-label" for="points">Is it correct? </label>
                 </div>
                 <div class="form-check col-md-3 ml-4">
-                    <input class="form-check-input" type="checkbox" name="bonus" value="2">
+                    <input class="form-check-input" type="checkbox" name="bonus" value="1">
                     <label class="form-check-label" for="bonus">Bonus Points? </label>
                 </div>
             </div>

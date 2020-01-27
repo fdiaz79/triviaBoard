@@ -1,3 +1,16 @@
+<?php 
+    include('db/connect.php');
+
+    //query to get scores from all participants
+    // $queryAll = 'SELECT * FROM score_board ORDER BY total_points';
+    // $results = mysqli_query($conn, $queryAll);
+    // $scores = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    // mysqli_free_result($results);
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <?php 
