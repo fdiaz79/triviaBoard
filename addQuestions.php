@@ -18,10 +18,7 @@
             header('Location: index.php');
         } else{
             echo 'There has been an error: ' . mysqli_error($conn);
-        }
-
-        
-
+        }  
     }
 
 ?>

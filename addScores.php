@@ -1,14 +1,48 @@
 <?php 
     include('db/connect.php');
-    // query for all questions
+    // get the info to fill out the select fields
     $questionsQuery = 'SELECT id, question, points, bonus FROM questions ORDER BY id';
     $result = mysqli_query($conn, $questionsQuery);
     $questions = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-    if($questions) {
-        print_r($questions);
+    mysqli_free_result($result);
+
+    $participantsQuery = 'SELECT id, participant FROM participants ORDER BY participant ';
+    $result = mysqli_query($conn, $participantsQuery);
+    $participants = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    // post answers to the DB
+
+    if(isset($_POST['submit'])) {
+        $participant = $_POST['participant'];
+        $question = $_POST['question'];
+        $answer = mysqli_real_escape_string($conn, $_POST['answer']);
+        if(!isset($_POST['correct'])){
+            $correct = 0;
+        } else{
+            $correct = (int)$_POST['correct'];
+        }
+        if(!isset($_POST['bonus'])){
+            $bonus = 0;
+        } else{
+            $bonus = (int)$_POST['bonus'];
+        }
+        
+
+        $answersQuery = "INSERT INTO answers(participant, question, points, bonus, answer) VALUES ('$participant', '$question', '$correct', '$bonus', '$answer')";
+        if(mysqli_query($conn, $answersQuery)) {
+            echo 'Answer succesfully saved';
+            unset($_POST);
+        } else{
+            echo 'There has been an error: ' . mysqli_error($conn);
+        }
+        
     }
 
+
+
+    mysqli_free_result($result);
+    mysqli_close($conn);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,33 +53,41 @@
     <div class="container">
         <h3 class="title">Add a new Response.</h3>
         <form action="addScores.php" method="POST">
-            <div class="form-group">
-                <label for="participant">Participant: </label>
-                <select name="participant" class="custom-select">
-                    <option value=""> --- Select the participant --- </option>
-                    <option value="Participant 1">Participant 1</option>
-                    <option value="Participant 2">Participant 2</option>
-                    <option value="Participant 3">Participant 3</option>
-                    <option value="Participant 4">Participant 4</option>
-                    <option value="newParticipant">New Participant</option>
-                </select>
+            <div class="row">
+                <div class="form-group col-sm-8">
+                    <label for="participant">Participant: </label>
+                    <select name="participant" class="custom-select" required>
+                        <option value=""> --- Select the participant --- </option>
+                        <?php 
+                            for ($i = 0; $i < count($participants); $i++) {
+                                $pText = $participants[$i]['participant'];
+                                $pId = $participants[$i]['id'];
+                                echo "<option value='$pId'>$pText </option>";
+                            }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-sm-4 button-col">
+                    <label for="newParticipant">Or: </label>
+                    <a href="addParticipant.php" class="boton btn btn-warning btn-block" id="newParticipant">New Participant</a>
+                </div>
             </div>
             <div class="form-group">
                 <label for="question">Question: </label>
-                <select name="question" class="custom-select">
+                <select name="question" class="custom-select" required>
                     <option value=""> --- Select Question --- </option>
                     <?php 
                         for($i = 0; $i < count($questions); $i++){
                             $qText = $questions[$i]['question'];
                             $qId = $questions[$i]['id'];
-                            echo "<option value='$qId'> $qText $qId</option> ";
+                            echo "<option value='$qId'> $qText</option> ";
                         }
                     ?>
                 </select>
             </div>
             <div class="form-group">
                 <label for="answer">Please type in the answer: </label>
-                <input type="text" name="answer" class="form-control">
+                <input type="text" name="answer" class="form-control" required>
             </div>
             <div class="form-row">
                 <div class="form-check col-md-3 ml-4">
