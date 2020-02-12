@@ -11,10 +11,28 @@
         SELECT id, participant FROM participants ORDER BY participant";
     $results = mysqli_query($conn, $participantsQuery);
     if($results === FALSE) {
-        die(mysqli_error($conn, $participantsQuery));
+        die(mysqli_error($conn));
     } else{
         $participants = mysqli_fetch_all($results, MYSQLI_ASSOC);
-        print_r($participants);
+        mysqli_free_result($results);
+        // print_r($participants);
+    }
+
+    if(isset($_GET['submit'])) {
+        $id = $_GET['participantName'];
+        $partScoresQuery = "
+            SELECT participants.participant, questions.question, answers.answer, answers.points, answers.bonus 
+            FROM answers
+            INNER JOIN participants ON participants.id = answers.participant
+            INNER JOIN questions ON questions.id = answers.question
+            WHERE answers.participant=".$id;
+        $results = mysqli_query($conn, $partScoresQuery);
+        if($results === FALSE) {
+            die(mysqli_error($conn));
+        } else{
+            $partScores = mysqli_fetch_all($results);
+            print_r($partScores);
+        }
     }
 
     //     "
@@ -135,8 +153,17 @@
                     </div>
                 <?php } else { ?>
                     <form action="scoreBoard.php" method="GET">
-                        <label for="question">Name of the Participant: </label>
-                        <input type="text" name="participant">
+                        <label for="participantName">Name of the Participant: </label>
+                        <select name="participantName" class="custom-select" required>
+                            <option value=""> --- Select One --- </option>
+                            <?php 
+                                for($j = 0; $j < count($participants); $j++) {
+                                    $pName = $participants[$j]['participant'];
+                                    $pId = $participants[$j]['id'];
+                                    echo "<option value='$pId'> $pName </option>";
+                                }
+                            ?>
+                        </select>                        
                         <input type="submit" name="submit" value="Get Scores" class="boton btn btn-warning btn-sm" id="getParticipant">
                     </form>
                 <?php } ?>
