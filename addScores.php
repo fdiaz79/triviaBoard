@@ -10,6 +10,8 @@
     $participantsQuery = 'SELECT id, participant FROM participants ORDER BY participant ';
     $result = mysqli_query($conn, $participantsQuery);
     $participants = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    // print_r($participants);
+    mysqli_free_result($result);
 
     // post answers to the DB
 
@@ -17,6 +19,15 @@
         $participant = $_POST['participant'];
         $question = $_POST['question'];
         $answer = mysqli_real_escape_string($conn, $_POST['answer']);
+        $pointsQuery = 'SELECT points, bonus FROM questions WHERE id = ' . $question;
+        $result = mysqli_query($conn, $pointsQuery);
+        if($result === FALSE) {
+            die(mysqli_error($conn));
+        } else{
+            $fetchedPoints = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        }
+        
+
         if(!isset($_POST['correct'])){
             $correct = 0;
         } else{
@@ -27,9 +38,11 @@
         } else{
             $bonus = (int)$_POST['bonus'];
         }
+        $points = $correct * $fetchedPoints[0]['points'];
+        $bonusPoints = $bonus * $fetchedPoints[0]['bonus'];
         
 
-        $answersQuery = "INSERT INTO answers(participant, question, points, bonus, answer) VALUES ('$participant', '$question', '$correct', '$bonus', '$answer')";
+        $answersQuery = "INSERT INTO answers(participant, question, points, bonus, answer) VALUES ('$participant', '$question', '$points', '$bonusPoints', '$answer')";
         if(mysqli_query($conn, $answersQuery)) {
             echo 'Answer succesfully saved';
             unset($_POST);
@@ -41,7 +54,7 @@
 
 
 
-    mysqli_free_result($result);
+    // mysqli_free_result($result);
     mysqli_close($conn);
 ?>
 <!DOCTYPE html>

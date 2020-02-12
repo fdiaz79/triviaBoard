@@ -7,6 +7,36 @@
     // $scores = mysqli_fetch_all($results, MYSQLI_ASSOC);
     // mysqli_free_result($results);
 
+    $participantsQuery = "
+        SELECT id, participant FROM participants ORDER BY participant";
+    $results = mysqli_query($conn, $participantsQuery);
+    if($results === FALSE) {
+        die(mysqli_error($conn, $participantsQuery));
+    } else{
+        $participants = mysqli_fetch_all($results, MYSQLI_ASSOC);
+        print_r($participants);
+    }
+
+    //     "
+    $scoresQuery = "
+        SELECT participants.participant, SUM(answers.points + answers.bonus) as points
+        FROM participants
+        INNER JOIN answers ON participants.id = answers.participant
+        GROUP BY participants.participant
+        ORDER BY points DESC
+    ";
+    $results = mysqli_query($conn, $scoresQuery);
+    
+
+    if($results === FALSE) {
+        die(mysqli_error($conn));
+    } else{
+        $scores = mysqli_fetch_all($results, MYSQLI_ASSOC);
+        // print_r($scores);
+    }  
+    
+    mysqli_free_result($results);
+    mysqli_close($conn);
 
 ?>
 
@@ -42,11 +72,12 @@
                     </thead>
                     <tbody>
                         <?php 
-                            for ($i = 0; $i < 4; $i++){
+                            for ($i = 0; $i < count($scores); $i++){
                                 $pos= $i + 1;
-                                $points = 10 - $pos;
+                                $participant = $scores[$i]['participant'];
+                                $points = $scores[$i]['points'];
                                 echo"<tr>";
-                                echo "<th> $pos </th> <th> Participant $pos </th> <th> $points points </th> ";
+                                echo "<th> $pos </th> <th> $participant </th> <th> $points points </th> ";
                                 echo"</tr>";
                             }
                         ?>
