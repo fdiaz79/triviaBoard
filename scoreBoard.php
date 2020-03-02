@@ -19,7 +19,7 @@
     }
 
     if(isset($_GET['submit'])) {
-        $id = $_GET['participantName'];
+        $id = $_GET['participantId'];
         $partScoresQuery = "
             SELECT participants.participant, questions.question, answers.answer, answers.points, answers.bonus 
             FROM answers
@@ -31,7 +31,8 @@
             die(mysqli_error($conn));
         } else{
             $partScores = mysqli_fetch_all($results);
-            print_r($partScores);
+            // print_r($partScores);
+            $participantName = $partScores[0][0];
         }
     }
 
@@ -65,10 +66,10 @@
         include('templates/header.php');
     ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12 col-md-6">
-                <h3 class="title text-center">
+                <h3 class="title">
                     SCOREBOARD
                 </h3>
                 <?php 
@@ -95,7 +96,7 @@
                                 $participant = $scores[$i]['participant'];
                                 $points = $scores[$i]['points'];
                                 echo"<tr>";
-                                echo "<th> $pos </th> <th> $participant </th> <th> $points points </th> ";
+                                echo "<td> $pos </td> <td> $participant </td> <th> $points points </td> ";
                                 echo"</tr>";
                             }
                         ?>
@@ -105,22 +106,25 @@
             </div>
 
             <div class="col-12 col-md-6">
-                <h3 class="title text-center">
+                <h3 class="title">
                     SEARCH SCORES BY PARTICIPANT
                 </h3>
-                <?php if(isset($_GET['submit'])) { $participant = $_GET['participant'];?>
+                <?php if(isset($_GET['submit'])) { $participant = $_GET['participantId'];?>
                     <div>
                         <?php 
-                            echo '<div class="table-head">Showing scores for: ' . htmlspecialchars($participant) . '</div>';
+                            echo '<div class="table-head">Showing scores for: ' . htmlspecialchars($participantName) . '</div>';
                         ?>
                         <table class="table table-striped table-dark">
                             <thead>
-                                <tr>
+                                <tr class="text-center">
                                     <th>
                                         Week
                                     </th>
-                                    <th>
+                                    <th class="text-left">
                                         Question
+                                    </th>
+                                    <th class="text-left">
+                                        Answer
                                     </th>
                                     <th>
                                         Points
@@ -135,13 +139,15 @@
                             </thead>
                             <tbody>
                                 <?php 
-                                    for ($i = 0; $i < 5; $i++){
+                                    for ($i = 0; $i < count($partScores); $i++){
                                         $week= $i + 1;
-                                        $points = 4;
-                                        $bonus = 2;
+                                        $question = $partScores[$i][1];
+                                        $answer = $partScores[$i][2];
+                                        $points = $partScores[$i][3];
+                                        $bonus = $partScores[$i][4];
                                         $total = $points + $bonus;
-                                        echo"<tr>";
-                                        echo "<th> $week </th> <th> Question $week </th> <th> $points </th> <th> $bonus </th> <th> $total </th> ";
+                                        echo"<tr class='text-center'>";
+                                        echo "<td> $week </td> <td class='text-left'> $question </td> <td class='text-left'> $answer </td> <td> $points </td> <td> $bonus </td> <td> $total </td> ";
                                         echo"</tr>";
                                     }
                                 ?>
@@ -153,8 +159,8 @@
                     </div>
                 <?php } else { ?>
                     <form action="scoreBoard.php" method="GET">
-                        <label for="participantName">Name of the Participant: </label>
-                        <select name="participantName" class="custom-select" required>
+                        <label for="participantId">Name of the Participant: </label>
+                        <select name="participantId" class="custom-select" required>
                             <option value=""> --- Select One --- </option>
                             <?php 
                                 for($j = 0; $j < count($participants); $j++) {
