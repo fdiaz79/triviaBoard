@@ -10,6 +10,14 @@ body{
     margin: auto;
 }
 
+.card{
+    margin: 4% auto;
+    width: 24em;
+}
+.card-body{
+    margin: auto;
+}
+
 .title{
     color: #ff6600;
     font-weight: bolder;

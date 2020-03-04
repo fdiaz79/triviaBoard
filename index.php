@@ -4,6 +4,13 @@
         include('templates/header.php');
     ?>
 
+    <main>
+        <div class="jumbotron">
+            <p class="alert alert-success text-center" role="alert" >You are logged out!</p>
+            <p class="alert alert-warning text-center" role="alert" >You are logged in!</p>
+        </div>
+    </main>
+
     <div class="container">
         <div class="row" id="button-row">
             <div class="col-4 button-col">
