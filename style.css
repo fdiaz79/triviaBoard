@@ -17,6 +17,14 @@ body{
 .card-body{
     margin: auto;
 }
+.signupError {
+    color: red;
+    font-weight: bold;
+}
+.signupSuccess {
+    color: green;
+    font-weight: bold;
+}
 
 .title{
     color: #ff6600;

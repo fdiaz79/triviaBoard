@@ -6,8 +6,16 @@
 
     <main>
         <div class="jumbotron">
-            <p class="alert alert-success text-center" role="alert" >You are logged out!</p>
-            <p class="alert alert-warning text-center" role="alert" >You are logged in!</p>
+            <?php 
+                if (isset($_SESSION['userId'])) {
+                    echo '<p class="alert alert-success text-center" role="alert" >You are logged in!</p>';
+                }
+                else {
+                    echo '<p class="alert alert-warning text-center" role="alert" >You are logged out!</p>';
+                }
+            ?>
+            
+            
         </div>
     </main>
 
